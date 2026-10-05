@@ -14,6 +14,8 @@ import sys
 from pathlib import PureWindowsPath
 from typing import Any, Dict, List, Optional, Tuple
 
+from tools.computer_use.backend import ComputerUseBackend, ComputerUseProvider
+
 logger = logging.getLogger("tools.computer_use.cua_backend")
 
 # PM owns the pinned binary; an explicit override remains externally owned.
@@ -178,3 +180,25 @@ def cua_driver_runtime_contract_status(binary: Optional[str] = None) -> Dict[str
 def cua_driver_update_check(*, timeout: Optional[float] = None) -> Optional[Dict[str, Any]]:
     """Historical import: upstream release polling is retired; PM owns the pin."""
     return None
+
+
+class CuaDriverProvider(ComputerUseProvider):
+    """Built-in ``cua`` backend (cua-driver over MCP); :mod:`agent.computer_use_registry` registers it first."""
+
+    name = "cua"
+    display_name = "cua-driver (background)"
+
+    def create_backend(self, *, permission_mode: str) -> ComputerUseBackend:
+        return _cb().CuaDriverBackend(permission_mode=permission_mode)
+
+    def is_available(self) -> bool:
+        """macOS/Windows/Linux + cua-driver binary (or env override). `hermes computer-use doctor` names blocked checks."""
+        if sys.platform not in ("darwin", "win32", "linux"):
+            return False
+        if cua_driver_binary_available():
+            return True
+        # No host driver: the tool is still real when the desktop is placed inside a terminal backend whose image
+        # carries cua-driver (nousresearch/hermes-sandbox:desktop). Placement is config; the binary is probed lazily
+        # at first use, so this stays a cheap check_fn.
+        from tools.bot_desktop import placement
+        return placement.resolve().where == placement.TERMINAL

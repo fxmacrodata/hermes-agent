@@ -39,6 +39,7 @@ HOST_UNSUPPORTED_CTX_METHODS: Dict[str, str] = {
     "register_slack_action_handler": "the callback receives native slack_bolt ack/body objects",
     "register_dashboard_auth_provider": "dashboard auth is owned by the launch process, not a profile",
     "register_approval_transport": "approval transports hold the live approval request/response channel",
+    "register_computer_use_provider": "the provider returns live ComputerUseBackend driver sessions",
 }
 
 # Registered in-process only; skipped (with a warning, the plugin still loads) inside the host

@@ -89,7 +89,8 @@ _PLUGIN_PROVIDER_ROW_SPECS = {
     "video_gen": ("agent.video_gen_registry", ("video_gen_plugin_name",), {"require_name": False}),
     "web": ("agent.web_search_registry", ("web_backend", "web_search_plugin_name"), {"flatten_variants": True}),
     "browser": ("agent.browser_registry", ("browser_provider", "browser_plugin_name"), {}),
-    "tts": ("agent.tts_registry", ("tts_provider", "tts_plugin_name"), {"skip_builtin": True})}
+    "tts": ("agent.tts_registry", ("tts_provider", "tts_plugin_name"), {"skip_builtin": True}),
+    "computer_use": ("agent.computer_use_registry", ("computer_use_backend",), {"skip_builtin": True})}
 
 
 def _plugin_rows_for(category: str) -> list[dict]:
@@ -99,8 +100,8 @@ def _plugin_rows_for(category: str) -> list[dict]:
 
 
 _plugin_image_gen_providers, _plugin_video_gen_providers, _plugin_web_search_providers, \
-    _plugin_browser_providers, _plugin_tts_providers = (
-        partial(_plugin_rows_for, cat) for cat in ("image_gen", "video_gen", "web", "browser", "tts"))
+    _plugin_browser_providers, _plugin_tts_providers, _plugin_computer_use_providers = (
+        partial(_plugin_rows_for, cat) for cat in ("image_gen", "video_gen", "web", "browser", "tts", "computer_use"))
 
 
 def web_provider_capabilities(backend: str) -> list:
@@ -125,7 +126,8 @@ _PLUGIN_ROW_BUILDERS = {
     "Video Generation": _plugin_video_gen_providers,
     "Web Search & Extract": _plugin_web_search_providers,
     "Browser Automation": _plugin_browser_providers,
-    "Text-to-Speech": _plugin_tts_providers}
+    "Text-to-Speech": _plugin_tts_providers,
+    "Computer Use (macOS/Windows/Linux)": _plugin_computer_use_providers}
 
 
 def _visible_providers(
